@@ -1,8 +1,10 @@
 /*eslint-disable no-console*/
 
-import * as actions from '../src/monitorActions'
-import { as, MANUAL_CANCEL, SagaCancellationException } from '../src'
-import { is } from '../src/utils'
+import {
+  monitorActions as actions,
+  is, as,
+  MANUAL_CANCEL, SagaCancellationException
+} from 'redux-saga'
 
 const PENDING = 'PENDING'
 const RESOLVED = 'RESOLVED'
@@ -97,6 +99,10 @@ function getChildEffects(parentEffectId) {
 
 function logEffectTree(effectId) {
   const effect = effectsById[effectId]
+  if(effectId === undefined) {
+    console.log('Saga monitor: No effect data for', effectId)
+    return
+  }
   const childEffects = getChildEffects(effectId)
 
   if(!childEffects.length)
@@ -146,7 +152,7 @@ function getEffectLog(effect) {
 
   else if(data = as.fork(effect.effect)) {
     log = getLogPrefix('', effect)
-    log.formatter.addCall(data.task.name, data.args)
+    log.formatter.addCall(data.fn.name, data.args)
     logResult(effect, log.formatter)
   }
 
